@@ -1,0 +1,14 @@
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
+#resetButton {
+    margin-top: 20px;
+    width: 200px;
+    height: 100px;
+    font: 24px Arial;
+}
