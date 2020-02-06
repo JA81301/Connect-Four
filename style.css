@@ -6,9 +6,10 @@
     flex: 50%;
 }
 
-#resetButton {
+button {
+    display: block;
     margin-top: 20px;
-    width: 200px;
-    height: 100px;
-    font: 24px Arial;
+    width: 250px;
+    height: 50px;
+    font: 18px Arial;
 }

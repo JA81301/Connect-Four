@@ -143,7 +143,10 @@ function canMove(grid, rowNum, colNum) {
 
 /*
 Given a grid and coordinates for a move, returns a new grid in which a move has been made at the coordinates by the player corresponding to "value".
-The checkValidity parameter controls whether or not the move being made is checked to make sure it is a legal move. This is needed because one method used for evaluating positions is to see how many "potential wins" a player has--how many squares there are for which they would win if they managed to place a piece there. Therefore, I needed a way to make a hypothetical move that may not be legal now but could be played sometime in the future.
+The checkValidity parameter controls whether or not the move being made is checked to make sure it is a legal move. 
+This is needed because one method used for evaluating positions is to see how many "potential wins" a player has.
+Potential wins are squares where a player would win they managed to place a piece there. 
+Therefore, I needed a way to make a hypothetical move that may not be legal now but could be played in the future.
 */
 function move(grid, coords, value, checkValidity = true) {
     invalid = false;
@@ -219,7 +222,12 @@ function possiblePositions(grid, player) {
 }
 
 /**
- * This function is a means of evaluating a position for which no player has won. This is important because in many instances the program does not search far enough in the game tree to find a guaranteed best move. The way the function works is by counting the difference in the number of winning squares between the two players, and weighting those potential wins by the row in which they occur. A "winning square" is as a square in which a given player would win if they placed a number there. It seems reasonable that a player that has more such squares is more likely to win. In addition, winning squares that occur in lower rows are seen as more valuable because these squares will come into play earlier than ones on higher rows--a player with a lot of potential wins in the lower rows will likely be able to win before a second player with a lot of wins in higher rows will get a chance to reach their own winning squares.
+ * This function is a means of evaluating a position for which no player has won. 
+ * This is important because in many instances the program does not search far enough in the game tree to find a guaranteed best move. 
+ * The way the function works is by counting the difference in the number of winning squares between the two players and weighting those potential wins by the row in which they occur. 
+ * A "winning square" is as a square in which a given player would win if they placed a number there. It seems reasonable that a player that has more such squares is more likely to win. 
+ * In addition, winning squares that occur in lower rows are seen as more valuable because these squares will come into play earlier than ones on higher rows. 
+ * A player with a lot of potential wins in the lower rows will likely be able to win before a second player with a lot of wins in higher rows will get a chance to reach their own winning squares.
 */
 function posWinsDifferential(grid) {
     var result = 0;
@@ -239,7 +247,12 @@ function posWinsDifferential(grid) {
 }
 
 /**
- * This function is the implmentation of the minimax algorithm. To find the value of a position, it searches the game tree to see if that positions will lead to a win, loss, or draw eventually, assuming both players make the best possible move. However, there are far too many possible moves for the program to search all the way to the end of the game tree every move. The parameter branchNumLimit represents the maximum number of moves ahead the program will search, and currentBranchNum represents that number of moves ahead that have been searched already. Each time the function is called recursivlely, currentBranchNum is incrimented until it reaches branchNumLimit. At this point, the posWinsDifferential function is used to evaluate positions.
+ * This function is the implmentation of the minimax algorithm. 
+ * To find the value of a position, it searches the game tree to see if that positions will lead to a win, loss, or draw, assuming both players make the best possible move. 
+ * However, there are far too many possible moves for the program to search all the way to the end of the game tree every move. 
+ * The parameter branchNumLimit represents the maximum number of moves ahead the program will search, and currentBranchNum represents that number of moves ahead that have been searched already. 
+ * Each time the function is called recursivlely, currentBranchNum is incremented until it reaches branchNumLimit. 
+ * At this point, the posWinsDifferential function is used to evaluate positions.
  */
 function getPosValue(grid, player, currentBranchNum, branchNumLimit) {
     if (checkWin(grid) !== 0) {
@@ -256,7 +269,11 @@ function getPosValue(grid, player, currentBranchNum, branchNumLimit) {
         for (var a = 0; a < posPositions.length; a++) {
             count += 1;
             posPositionsValues.push(.9 * getPosValue(posPositions[a], player * -1, currentBranchNum + 1, branchNumLimit));
-            // Because of the .9, the program sees wins that are farther away as worse than wins that are closer because their value decreases with each multiplication. For this reason, the program will pick the move that leads to the fastest guaranteed win. Similarly, losses have a negative value, so losses that are farther away are seen as less bad than losses that are closer. This is important because it means the program will try to delay losing for as long as possible even if it sees that a position is a guaranteed loss, which gives a human opponent more time to make a mistake.
+            /* Because of the .9, the program sees wins that are farther away as worse than wins that are closer because their value decreases with each multiplication. 
+            For this reason, the program will pick the move that leads to the fastest guaranteed win. 
+            Similarly, losses have a negative value, so losses that are farther away are seen as less bad than losses that are closer. 
+            This is important because it means the program will try to delay losing for as long as possible, even if it sees that a position is a guaranteed loss.
+            */
         }
         if (player === 1) {
             return Math.max(...posPositionsValues);
@@ -283,14 +300,18 @@ function minIndex(arr) {
 }
 
 /**
- * This function combines the checkWin function with the posWinsDifferential function to evaluate a position. If a position is a win it gets a value of plus or minus 1, if not the position is evaluated based on the method described in poswinsDifferential.
+ * This function combines the checkWin function with the posWinsDifferential function to evaluate a position. 
+ * If a position is a win it gets a value of plus or minus 1, if not the position is evaluated based on the method described in poswinsDifferential.
  */
 function getGridValue(grid, player) {
     var checkWinNum = checkWin(grid);
     if (checkWinNum !== 0) {
         return checkWinNum;
     } else {
-        return posWinsDifferential(grid) / 100; // The division by 100 ensures that this value will always be significantly less than 1. This means that when looking ahead many moves, the program will always prioritize a guaranteed win first over any result coming from posWinsDifferential.
+        return posWinsDifferential(grid) / 100; 
+        /*The division by 100 ensures that this value will always be significantly less than 1. 
+        This means that when looking ahead many moves, the program will always prioritize a guaranteed win first over any result coming from posWinsDifferential.
+        */
     }
 }
 
@@ -395,7 +416,9 @@ function winResponse(grid) {
 }
 
 /**
- * This function controls how many moves ahead the program will search. As the number of non-full columns decreases, there are less possible moves, so the game tree increases in size more slowly. This enables the computer to search farther ahead in the same amount of time. The specific numbers returned were tested so each move would take about the same time throughout the game.
+ * This function controls how many moves ahead the program will search. 
+ * As the number of non-full columns decreases, there are less possible moves, so the game tree increases in size more slowly. 
+ * This enables the computer to search farther ahead in the same amount of time. The specific numbers returned were selected so that each move will take approximately the same time throughout the game.
  */
 function getSearchDepth(grid) {
     var numMoves = possibleMoves(grid).length; // This is the number of open columns.
@@ -429,16 +452,16 @@ function getSearchDepth(grid) {
 function levelAdjust(evt) {
     if (difficultyAdjustment === -1) {
         difficultyAdjustment = -4;
-        levelButton.innerHTML = "Current Difficulty: Very Easy";
+        levelButton.innerHTML = "Current Difficulty Level:<br> Very Easy";
     } else if (difficultyAdjustment === -4) {
         difficultyAdjustment = -3;
-        levelButton.innerHTML = "Current Difficulty: Easy";
+        levelButton.innerHTML = "Current Difficulty Level:<br> Easy";
     } else if (difficultyAdjustment === -3) {
         difficultyAdjustment = -2;
-        levelButton.innerHTML = "Current Difficulty: Medium";
+        levelButton.innerHTML = "Current Difficulty Level:<br> Medium";
     } else if (difficultyAdjustment === -2) {
         difficultyAdjustment = -1;
-        levelButton.innerHTML = "Current Difficulty: Hard";
+        levelButton.innerHTML = "Current Difficulty Level:<br> Hard";
         alert("On the \"hard\" difficulty setting, the computer may take 10 or more seconds to move.");
     }
 }
@@ -488,8 +511,8 @@ function resetGame() {
     invalid = false;
     count = 0;
     timeOfLastComputerMove = 0;
-    turnIndicator.innerHTML = "Make a move or click the following button to make the computer go first";
-    makeComputerMoveButton.style.display = "inline-block";
+    turnIndicator.innerHTML = "Make a move, or click the following button to make the computer go first:";
+    makeComputerMoveButton.style.display = "block";
     drawGame(gameGrid);
 }
 
